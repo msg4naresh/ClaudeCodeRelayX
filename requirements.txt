@@ -1,0 +1,6 @@
+boto3
+fastapi[standard]
+requests
+pydantic
+python-dotenv
+pytest
