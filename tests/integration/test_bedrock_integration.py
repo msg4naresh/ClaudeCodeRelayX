@@ -26,10 +26,10 @@ from pathlib import Path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import components for direct testing
-from claude_code_relayx.backends.bedrock.client import get_bedrock_client
-from claude_code_relayx.backends.bedrock.service import call_bedrock_converse
-from claude_code_relayx.models import MessagesRequest, Message
-from claude_code_relayx.backends.bedrock.translator import (
+from relayx.backends.bedrock.client import get_bedrock_client
+from relayx.backends.bedrock.service import call_bedrock_converse
+from relayx.models import MessagesRequest, Message
+from relayx.backends.bedrock.translator import (
     extract_system_message, convert_to_bedrock_messages, count_tokens_from_messages
 )
 

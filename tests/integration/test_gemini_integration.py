@@ -28,9 +28,9 @@ from pathlib import Path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import components for direct testing
-from claude_code_relayx.service_router import call_llm_service, get_backend_info
-from claude_code_relayx.models import MessagesRequest, Message, Tool
-from claude_code_relayx.backends.openai_compatible.service import call_openai_compatible_chat
+from relayx.service_router import call_llm_service, get_backend_info
+from relayx.models import MessagesRequest, Message, Tool
+from relayx.backends.openai_compatible.service import call_openai_compatible_chat
 
 # Test configuration
 SERVER_HOST = "localhost"

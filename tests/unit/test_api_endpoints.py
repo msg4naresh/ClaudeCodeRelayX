@@ -14,7 +14,7 @@ reliable testing without external dependencies.
 import pytest
 from unittest.mock import patch
 from fastapi.testclient import TestClient
-from src.claude_code_relayx.proxy_server import app
+from src.relayx.proxy_server import app
 
 
 # Initialize test client
@@ -37,7 +37,7 @@ mock_bedrock_response = {
 }
 
 
-@patch('src.claude_code_relayx.backends.bedrock.service.get_bedrock_client')
+@patch('src.relayx.backends.bedrock.service.get_bedrock_client')
 def test_create_message_success(mock_get_client):
     """
     Test successful message creation with all parameters.
@@ -91,7 +91,7 @@ def test_create_message_success(mock_get_client):
     assert data["usage"]["output_tokens"] == 8
 
 
-@patch('src.claude_code_relayx.backends.bedrock.service.get_bedrock_client')
+@patch('src.relayx.backends.bedrock.service.get_bedrock_client')
 def test_bedrock_error_handling(mock_get_client):
     """
     Test error handling when AWS Bedrock API fails.

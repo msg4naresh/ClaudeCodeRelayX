@@ -69,7 +69,7 @@ pytest tests/integration/ -v
 ```
 ├── main.py          # Main entry point
 ├── run_tests.py                      # Comprehensive test runner
-├── src/claude_code_relayx/         # Core package
+├── src/relayx/                   # Core package
 │   ├── __init__.py                   # Package info
 │   ├── proxy_server.py              # FastAPI server
 │   ├── service_router.py             # Backend routing logic

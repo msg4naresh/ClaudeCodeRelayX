@@ -23,8 +23,8 @@ import logging
 import os
 from dotenv import load_dotenv
 
-from src.claude_code_relayx.proxy_server import app
-from src.claude_code_relayx.service_router import get_backend_info
+from src.relayx.proxy_server import app
+from src.relayx.service_router import get_backend_info
 
 
 def main():
