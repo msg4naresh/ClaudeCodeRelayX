@@ -1,6 +1,30 @@
-# Claude Code Multi-Backend Proxy
+# RelayX - Claude Code Multi-Backend Proxy
 
-Claude Code API-compatible server that routes to multiple LLM backends: AWS Bedrock, Google Gemini, OpenAI, and local models.
+A hackable Claude API proxy for monitoring AI agent requests and connecting multiple LLM backends. No complex AI frameworks - just FastAPI, requests, and clean code you can easily modify.
+
+## Project Goals
+
+### Primary: Hackable LLM Request Monitoring
+- **See what Claude Code is actually doing** - intercept and log all requests/responses  
+- **Monitor tool calling patterns** - watch which tools get called and when
+- **Debug agentic workflows** - understand multi-step task execution in real-time
+- **No AI frameworks required** - pure FastAPI + requests, easy to modify and extend
+
+### Secondary: LLM Backend Flexibility
+- **Connect any LLM** - swap between Claude, GPT-4, Gemini, local models instantly
+- **Extend time limits** - run longer workflows by routing through your own infrastructure  
+- **Add new backends** - simple translator pattern makes adding new LLMs easy
+- **Custom model access** - use fine-tuned models or experimental endpoints
+
+## Why Build This?
+
+As developers working with AI agents, we often wonder:
+- What requests is Claude Code actually making?
+- How does it decide which tools to call?
+- Can I run the same workflow on a different/cheaper model?
+- How can I extend session time limits?
+
+This proxy gives you **full visibility and control** without complex AI frameworks.
 
 ## Quick Start
 
