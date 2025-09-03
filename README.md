@@ -198,12 +198,3 @@ pytest tests/integration/ -v
 - `count_tokens(request)` - `/v1/messages/count_tokens` endpoint
 - `health()` - `/health` endpoint
 
-## Features
-
-- ✅ Multi-turn conversations
-- ✅ System messages  
-- ✅ Tool calling
-- ✅ Token counting
-- ✅ Temperature/top_p/top_k
-- ❌ Streaming (detected but not implemented)
-- ❌ Image content
