@@ -1,6 +1,57 @@
 # RelayX - Claude Code Multi-Backend Proxy
 
+****  Intercept and route Claude Code API requests to any LLM backend.
+
 A hackable Claude API proxy for monitoring AI agent requests and connecting multiple LLM backends. No complex AI frameworks - just FastAPI, requests, and clean code you can easily modify.
+
+
+## Architecture Flow
+
+```
+┌─────────────┐    ANTHROPIC_BASE_URL=localhost:8082    ┌─────────────────┐
+│ Claude Code │ ──────────────────────────────────────► │ FastAPI Server  │
+└─────────────┘            POST /v1/messages            │ (proxy_server)  │
+                                                        └─────────────────┘
+                                                                  │
+                                                                  ▼
+                                                         ┌─────────────────┐
+                                                         │ Service Router  │
+                                                         │(service_router) │
+                                                         └─────────────────┘
+                                                                  │
+                                      Backend Selection Logic ────┤
+                                      (LLM_BACKEND env var or     │
+                                       auto-detect via API keys)  │
+                                                                  │
+                           ┌──────────────────────────────────────┼──────────────────────────────────────┐
+                           │                                      │                                      │
+                           ▼                                      ▼                                      ▼
+                 ┌─────────────────┐                   ┌─────────────────┐                   ┌─────────────────┐
+                 │ Bedrock Backend │                   │OpenAI Compatible│                   │  Future Backend │
+                 │   (bedrock/)    │                   │ (openai_compat) │                   │   (extensible)  │
+                 └─────────────────┘                   └─────────────────┘                   └─────────────────┘
+                           │                                      │                                      │
+                    Claude → Bedrock                       Claude → OpenAI                      Claude → ???
+                    Translation                            Translation                         Translation
+                           │                                      │                                      │
+                           ▼                                      ▼                                      ▼
+                 ┌─────────────────┐                   ┌─────────────────┐                   ┌─────────────────┐
+                 │  AWS Bedrock    │                   │   OpenAI API    │                   │    Any LLM      │
+                 │ Converse API    │                   │ Chat Completions│                   │   Provider      │
+                 │                 │                   │                 │                   │                 │
+                 │ • Claude Sonnet │                   │ • GPT-4/3.5     │                   │ • Local Models  │
+                 │ • Claude Haiku  │                   │ • Gemini Flash  │                   │ • Custom APIs   │
+                 │ • Claude Opus   │                   │ • OpenAI Compat │                   │ • Fine-tuned    │
+                 └─────────────────┘                   └─────────────────┘                   └─────────────────┘
+```
+
+### Key Components
+
+**FastAPI Server** - Receives Claude API requests on port 8082  
+**Service Router** - Auto-detects and routes to appropriate backend  
+**Translation Layer** - Converts between Claude and provider API formats  
+**Backend Providers** - AWS Bedrock, OpenAI, Gemini, local models
+
 
 ## Project Goals
 
