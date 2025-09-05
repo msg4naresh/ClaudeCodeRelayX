@@ -13,7 +13,7 @@ import logging
 import json
 import os
 from datetime import datetime
-from .service_router import get_backend_info
+# Note: get_backend_info imported dynamically to avoid circular imports
 
 
 
@@ -339,10 +339,15 @@ def log_request_response(request_logger: logging.Logger, main_logger: logging.Lo
     """
     timestamp = datetime.now().strftime("%H:%M:%S")
     
-    # Get backend info for context
-    backend_info = get_backend_info()
-    backend = backend_info.get('backend', 'unknown')
-    model = backend_info.get('model', 'unknown')
+    # Get backend info for context (import dynamically to avoid circular imports)
+    try:
+        from .server import get_backend_info
+        backend_info = get_backend_info()
+        backend = backend_info.get('backend', 'unknown')
+        model = backend_info.get('model', 'unknown')
+    except ImportError:
+        backend = 'unknown'
+        model = 'unknown'
     
     # Extract request details
     msg_count = len(request_data.get('messages', []))

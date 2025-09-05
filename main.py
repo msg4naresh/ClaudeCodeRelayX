@@ -2,20 +2,19 @@
 """
 Main entry point for ClaudeCodeRelayX.
 
-This script starts the FastAPI server that provides Claude API compatibility
-for multiple LLM backends (AWS Bedrock, OpenAI). It can be run directly or imported as a module.
+Clean startup script that initializes and runs the FastAPI server.
+The server provides Claude API compatibility for multiple LLM backends.
 
 Usage:
     python main.py
     
 The server will start on http://0.0.0.0:8082 by default.
 
-    
-API Endpoints:
-    POST /v1/messages - Claude API compatible chat completions
-    POST /v1/messages/count_tokens - Token counting
-    GET /health - Health check
-    GET / - Server info
+Features:
+    - Auto-detects backend (Bedrock or OpenAI-compatible)
+    - Environment variable configuration
+    - Structured logging and monitoring
+    - Claude API compatible endpoints
 """
 
 import uvicorn
@@ -23,16 +22,15 @@ import logging
 import os
 from dotenv import load_dotenv
 
-from src.relayx.proxy_server import app
-from src.relayx.service_router import get_backend_info
+from src.relayx.server import app, get_backend_info
 
 
 def main():
     """
-    Start the ClaudeCodeRelayX proxy server.
+    Start the ClaudeCodeRelayX server.
     
-    Initializes logging, displays startup information, and starts the FastAPI
-    server with uvicorn on all interfaces at port 8082.
+    Loads configuration, displays backend info, and starts the server.
+    All server logic is contained in server.py for easy hacking.
     """
     # Load environment variables from .env file
     load_dotenv()

@@ -21,17 +21,20 @@ import sys
 import pytest
 from typing import Dict, Any
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import components for direct testing
-from relayx.backends.bedrock.client import get_bedrock_client
-from relayx.backends.bedrock.service import call_bedrock_converse
-from relayx.models import MessagesRequest, Message
-from relayx.backends.bedrock.translator import (
-    extract_system_message, convert_to_bedrock_messages, count_tokens_from_messages
+from relayx.bedrock import (
+    get_bedrock_client, call_bedrock_converse, extract_system_message, 
+    convert_to_bedrock_messages, count_tokens_from_messages
 )
+from relayx.models import MessagesRequest, Message
 
 # Test configuration
 SERVER_HOST = "localhost"
@@ -329,8 +332,8 @@ def test_log_files_generation():
         
         # Verify log files exist and have content
         log_files = [
-            Path(test_instance.test_log_dir) / "bedrock_server.log",
-            Path(test_instance.test_log_dir) / "requests.log"
+            Path(test_instance.test_log_dir) / "requests.log",
+            Path(test_instance.test_log_dir) / "structured.jsonl"
         ]
         
         for log_file in log_files:
@@ -338,14 +341,13 @@ def test_log_files_generation():
             assert log_file.stat().st_size > 0, f"Log file is empty: {log_file}"
             print(f"✅ Log file created: {log_file} ({log_file.stat().st_size} bytes)")
         
-        # Verify request log contains expected JSON content
+        # Verify request log contains expected content
         requests_log = Path(test_instance.test_log_dir) / "requests.log"
         with open(requests_log) as f:
             content = f.read()
-            assert "claude-3-5-sonnet" in content
-            assert "duration_seconds" in content
-            assert "/v1/messages" in content
-            print("✅ Request log contains expected JSON content")
+            assert "Test logging" in content
+            assert "LLM Response" in content
+            print("✅ Request log contains expected content")
             
     finally:
         test_instance.stop_server()

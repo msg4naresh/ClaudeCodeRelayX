@@ -1,20 +1,65 @@
 """
-Message translation between Claude API and AWS Bedrock Converse API formats.
+AWS Bedrock backend implementation for Claude Code RelayX.
 
-This module handles the core translation logic:
-- Converting Claude API message format to Bedrock Converse format
-- Extracting and processing system messages  
-- Handling different content block types (text, tool_result, etc.)
-- Token counting and estimation utilities
+This module consolidates all Bedrock-related functionality:
+- AWS Bedrock Runtime client initialization and configuration
+- Message translation between Claude API and Bedrock Converse API formats
+- Core service logic for making Bedrock API calls
+- Token counting and response processing
 """
 
+import os
 import uuid
+import logging
 from typing import List, Dict, Any, Optional, Union
-from ...models import (
+
+import boto3
+from botocore.exceptions import ClientError, BotoCoreError
+from botocore.config import Config
+from fastapi import HTTPException
+
+from .models import (
     MessagesRequest, MessagesResponse, Message, SystemContent, 
-    ContentBlockText, ContentBlockToolUse, Usage
+    ContentBlockText, ContentBlockToolUse, Usage,
+    TokenCountRequest, TokenCountResponse
 )
 
+
+logger = logging.getLogger(__name__)
+
+
+# === BEDROCK CLIENT ===
+
+def get_bedrock_client():
+    """Get configured AWS Bedrock Runtime client."""
+    try:
+        config = Config(
+            region_name=os.environ.get("AWS_DEFAULT_REGION", "us-east-1"),
+            retries={"max_attempts": 3, "mode": "adaptive"}
+        )
+        
+        # Use specified AWS profile or default to "saml"
+        profile_name = os.environ.get("AWS_PROFILE", "saml")
+        session = boto3.Session(profile_name=profile_name)
+        
+        # Get region from environment or use default
+        region = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
+        
+        return session.client("bedrock-runtime", region_name=region, config=config)
+        
+    except (BotoCoreError, ClientError) as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to create bedrock client: {str(e)}"
+        )
+
+
+def get_model_id() -> str:
+    """Get Bedrock model ID from environment variables."""
+    return os.environ.get("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-20250514-v1:0")
+
+
+# === BEDROCK TRANSLATOR ===
 
 def extract_system_message(request: MessagesRequest) -> Optional[str]:
     """Extract system message from request."""
@@ -183,3 +228,101 @@ def create_claude_response(bedrock_response: Dict[str, Any], model_id: str) -> M
             output_tokens=usage_info.get('outputTokens', 0)
         )
     )
+
+
+# === BEDROCK SERVICE ===
+
+def call_bedrock_converse(request: MessagesRequest) -> MessagesResponse:
+    """Execute Claude API request via AWS Bedrock."""
+    try:
+        # Get Bedrock client and model ID
+        bedrock_client = get_bedrock_client()
+        model_id = get_model_id()
+        
+        # Convert messages and extract system
+        bedrock_messages = convert_to_bedrock_messages(request)
+        system_message = extract_system_message(request)
+        
+        # Build inference configuration
+        inference_config = {
+            "temperature": request.temperature or 0.7,
+            "maxTokens": request.max_tokens
+        }
+        
+        # Add optional parameters
+        if request.top_p:
+            inference_config["topP"] = request.top_p
+        if request.top_k:
+            inference_config["topK"] = request.top_k
+            
+        # Handle tool configuration
+        if request.tools:
+            tool_config = {
+                "tools": []
+            }
+            
+            for tool in request.tools:
+                bedrock_tool = {
+                    "toolSpec": {
+                        "name": tool.name,
+                        "description": tool.description or "",
+                        "inputSchema": {
+                            "json": tool.input_schema
+                        }
+                    }
+                }
+                tool_config["tools"].append(bedrock_tool)
+            
+            # Handle tool choice
+            if request.tool_choice:
+                if request.tool_choice.get("type") == "tool":
+                    tool_config["toolChoice"] = {
+                        "tool": {
+                            "name": request.tool_choice["name"]
+                        }
+                    }
+                elif request.tool_choice.get("type") == "auto":
+                    tool_config["toolChoice"] = {"auto": {}}
+                elif request.tool_choice.get("type") == "any":
+                    tool_config["toolChoice"] = {"any": {}}
+        
+        # Prepare Bedrock Converse request
+        converse_params = {
+            "modelId": model_id,
+            "messages": bedrock_messages,
+            "inferenceConfig": inference_config
+        }
+        
+        # Add system message if present
+        if system_message:
+            converse_params["system"] = [{"text": system_message}]
+            
+        # Add tool configuration if present
+        if request.tools:
+            converse_params["toolConfig"] = tool_config
+        
+        # Make the API call
+        response = bedrock_client.converse(**converse_params)
+        
+        # Convert response back to Claude format
+        return create_claude_response(response, model_id)
+        
+    except ClientError as e:
+        error_message = e.response.get('Error', {}).get('Message', str(e))
+        logger.error(f"Bedrock error: {error_message}")
+        raise HTTPException(status_code=500, detail=f"Bedrock error: {error_message}")
+    
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+def count_request_tokens(request: TokenCountRequest) -> TokenCountResponse:
+    """Count tokens for Bedrock models."""
+    try:
+        token_count = count_tokens_from_messages(request.messages, request.system)
+        return TokenCountResponse(input_tokens=token_count)
+        
+    except Exception as e:
+        logger.error(f"Error counting tokens: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error counting tokens: {str(e)}")

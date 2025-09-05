@@ -23,14 +23,18 @@ import pytest
 import json
 from typing import Dict, Any, List
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import components for direct testing
-from relayx.service_router import call_llm_service, get_backend_info
+from relayx.server import call_llm_service, get_backend_info
 from relayx.models import MessagesRequest, Message, Tool
-from relayx.backends.openai_compatible.service import call_openai_compatible_chat
+from relayx.openai_compatible import call_openai_compatible_chat
 
 # Test configuration
 SERVER_HOST = "localhost"

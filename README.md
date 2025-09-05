@@ -5,34 +5,25 @@
 A hackable Claude API proxy for monitoring AI agent requests and connecting multiple LLM backends. No complex AI frameworks - just FastAPI, requests, and clean code you can easily modify.
 
 
-## Architecture Flow
+## Architecture
 
 ```
 ┌─────────────┐    ANTHROPIC_BASE_URL=localhost:8082    ┌─────────────────┐
-│ Claude Code │ ──────────────────────────────────────► │ FastAPI Server  │
-└─────────────┘            POST /v1/messages            │ (proxy_server)  │
+│ Claude Code │ ──────────────────────────────────────► │     RelayX      │
+└─────────────┘            POST /v1/messages            │   (server.py)   │
                                                         └─────────────────┘
                                                                   │
-                                                                  ▼
-                                                         ┌─────────────────┐
-                                                         │ Service Router  │
-                                                         │(service_router) │
-                                                         └─────────────────┘
-                                                                  │
-                                      Backend Selection Logic ────┤
-                                      (LLM_BACKEND env var or     │
-                                       auto-detect via API keys)  │
+                                                    Auto-Detection │
+                                                   (env vars/keys) │
                                                                   │
                            ┌──────────────────────────────────────┼──────────────────────────────────────┐
                            │                                      │                                      │
                            ▼                                      ▼                                      ▼
                  ┌─────────────────┐                   ┌─────────────────┐                   ┌─────────────────┐
-                 │ Bedrock Backend │                   │OpenAI Compatible│                   │  Future Backend │
-                 │   (bedrock/)    │                   │ (openai_compat) │                   │   (extensible)  │
+                 │  AWS Bedrock    │                   │OpenAI Compatible│                   │  Future Backend │
+                 │  (bedrock.py)   │                   │  (openai_compat │                   │                 │
+                 │                 │                   │      .py)       │                   │                 │
                  └─────────────────┘                   └─────────────────┘                   └─────────────────┘
-                           │                                      │                                      │
-                    Claude → Bedrock                       Claude → OpenAI                      Claude → ???
-                    Translation                            Translation                         Translation
                            │                                      │                                      │
                            ▼                                      ▼                                      ▼
                  ┌─────────────────┐                   ┌─────────────────┐                   ┌─────────────────┐
@@ -40,17 +31,22 @@ A hackable Claude API proxy for monitoring AI agent requests and connecting mult
                  │ Converse API    │                   │ Chat Completions│                   │   Provider      │
                  │                 │                   │                 │                   │                 │
                  │ • Claude Sonnet │                   │ • GPT-4/3.5     │                   │ • Local Models  │
-                 │ • Claude Haiku  │                   │ • Gemini Flash  │                   │ • Custom APIs   │
-                 │ • Claude Opus   │                   │ • OpenAI Compat │                   │ • Fine-tuned    │
+                 │ • Claude Haiku  │                   │ • Gemini 2.0    │                   │ • Custom APIs   │
+                 │ • Claude Opus   │                   │ • Ollama/LM Std │                   │ • Fine-tuned    │
                  └─────────────────┘                   └─────────────────┘                   └─────────────────┘
 ```
 
-### Key Components
+**How it works:**
+1. Claude Code sends requests to RelayX (localhost:8082)
+2. RelayX auto-detects backend (Bedrock vs OpenAI-compatible)  
+3. RelayX translates Claude API ↔ Provider API formats
+4. Response flows back to Claude Code
 
-**FastAPI Server** - Receives Claude API requests on port 8082  
-**Service Router** - Auto-detects and routes to appropriate backend  
-**Translation Layer** - Converts between Claude and provider API formats  
-**Backend Providers** - AWS Bedrock, OpenAI, Gemini, local models
+**Backend Support:**
+- **AWS Bedrock**: Claude Sonnet/Haiku/Opus (native format)
+- **OpenAI**: GPT-4, GPT-3.5 (via OpenAI API)
+- **Google Gemini**: 2.0-flash, 1.5-pro (via OpenAI-compatible API)
+- **Local**: Ollama, LM Studio (via OpenAI-compatible API)
 
 
 ## Project Goals
@@ -142,23 +138,15 @@ pytest tests/integration/ -v
 ## File Structure
 
 ```
-├── main.py          # Main entry point
+├── main.py                           # Clean entry point (62 lines)
 ├── run_tests.py                      # Comprehensive test runner
-├── src/relayx/                   # Core package
+├── src/relayx/                       # Core package
 │   ├── __init__.py                   # Package info
-│   ├── proxy_server.py              # FastAPI server
-│   ├── service_router.py             # Backend routing logic
+│   ├── server.py                     # Complete server logic (200 lines)
+│   ├── bedrock.py                    # All Bedrock functionality (327 lines)
+│   ├── openai_compatible.py          # All OpenAI-compatible functionality (447 lines)
 │   ├── models.py                     # Pydantic models
-│   ├── logging_config.py             # Logging configuration
-│   └── backends/                     # Backend implementations
-│       ├── bedrock/                  # AWS Bedrock backend
-│       │   ├── client.py             # AWS client setup
-│       │   ├── service.py            # Bedrock API integration
-│       │   └── translator.py         # Claude ↔ Bedrock translation
-│       └── openai_compatible/        # OpenAI-compatible backend
-│           ├── client.py             # HTTP client for OpenAI APIs
-│           ├── service.py            # OpenAI API integration
-│           └── translator.py         # Claude ↔ OpenAI translation
+│   └── logging_config.py             # Logging configuration
 ├── tests/                            # Test package
 │   ├── unit/                         # Fast tests with mocks
 │   │   ├── test_api_endpoints.py     # API endpoint tests
@@ -171,30 +159,33 @@ pytest tests/integration/ -v
 └── README.md                         # This file
 ```
 
+**Simple Architecture**: Core functionality organized in focused files
+- `server.py` - FastAPI server with backend routing and API endpoints
+- `bedrock.py` - AWS Bedrock integration with Claude API translation
+- `openai_compatible.py` - OpenAI-compatible API integration (OpenAI, Gemini, local models)
+
 ## API Functions
 
-### Core Functions (`service_router.py`)
+### Server Functions (`server.py`)
 - `get_backend_type()` - Determine backend from environment  
 - `call_llm_service(request)` - Route requests to backends
 - `count_llm_tokens(request)` - Token counting
 - `get_backend_info()` - Runtime configuration info
-
-### Bedrock Backend (`backends/bedrock/`)
-- `service.call_bedrock_converse(request)` - AWS Bedrock API calls
-- `service.count_request_tokens(request)` - Bedrock token counting
-- `client.get_bedrock_client()` - AWS client setup
-- `translator.convert_to_bedrock_messages()` - Claude → Bedrock format
-- `translator.create_claude_response()` - Bedrock → Claude format
-
-### OpenAI-Compatible Backend (`backends/openai_compatible/`)
-- `service.call_openai_compatible_chat(request)` - OpenAI API calls
-- `service.count_openai_tokens(request)` - Token estimation
-- `client.get_openai_compatible_client()` - HTTP session setup
-- `translator.convert_to_openai_messages()` - Claude → OpenAI format
-- `translator.create_claude_response_from_openai()` - OpenAI → Claude format
-
-### Proxy Server (`proxy_server.py`)
 - `create_message(request)` - `/v1/messages` endpoint
 - `count_tokens(request)` - `/v1/messages/count_tokens` endpoint
 - `health()` - `/health` endpoint
+
+### Bedrock Backend (`bedrock.py`)
+- `call_bedrock_converse(request)` - AWS Bedrock API calls
+- `count_request_tokens(request)` - Bedrock token counting
+- `get_bedrock_client()` - AWS client setup
+- `convert_to_bedrock_messages()` - Claude → Bedrock format
+- `create_claude_response()` - Bedrock → Claude format
+
+### OpenAI-Compatible Backend (`openai_compatible.py`)
+- `call_openai_compatible_chat(request)` - OpenAI API calls
+- `count_openai_tokens(request)` - Token estimation
+- `get_openai_compatible_client()` - HTTP session setup
+- `convert_to_openai_messages()` - Claude → OpenAI format
+- `create_claude_response_from_openai()` - OpenAI → Claude format
 
