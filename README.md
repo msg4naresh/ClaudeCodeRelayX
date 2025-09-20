@@ -126,9 +126,9 @@ ANTHROPIC_BASE_URL=http://localhost:8082
 
 ```bash
 # All tests
-python run_tests.py
+pytest tests/ -v
 
-# Unit tests only  
+# Unit tests only
 pytest tests/unit/ -v
 
 # Integration tests (requires API keys)
@@ -139,7 +139,6 @@ pytest tests/integration/ -v
 
 ```
 ├── main.py                           # Clean entry point (62 lines)
-├── run_tests.py                      # Comprehensive test runner
 ├── src/relayx/                       # Core package
 │   ├── __init__.py                   # Package info
 │   ├── server.py                     # Complete server logic (200 lines)
