@@ -18,7 +18,7 @@ from botocore.exceptions import ClientError, BotoCoreError
 from botocore.config import Config
 from fastapi import HTTPException
 
-from .models import (
+from relayx.models import (
     MessagesRequest, MessagesResponse, Message, SystemContent, 
     ContentBlockText, ContentBlockToolUse, Usage,
     TokenCountRequest, TokenCountResponse
@@ -336,7 +336,7 @@ def call_bedrock_converse(request: MessagesRequest) -> MessagesResponse:
         raise HTTPException(status_code=500, detail=f"Bedrock error: {error_message}")
     
     except Exception as e:
-        logger.error(f"Unexpected error: {str(e)}")
+        logger.exception(f"Unexpected error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
 
@@ -347,5 +347,5 @@ def count_request_tokens(request: TokenCountRequest) -> TokenCountResponse:
         return TokenCountResponse(input_tokens=token_count)
         
     except Exception as e:
-        logger.error(f"Error counting tokens: {str(e)}")
+        logger.exception(f"Error counting tokens: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error counting tokens: {str(e)}")

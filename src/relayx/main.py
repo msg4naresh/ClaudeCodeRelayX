@@ -22,7 +22,7 @@ import logging
 import os
 from dotenv import load_dotenv
 
-from src.relayx.server import app, get_backend_info
+from relayx.server import app, get_backend_info
 
 
 def main():

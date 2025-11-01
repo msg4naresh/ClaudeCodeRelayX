@@ -330,7 +330,7 @@ def _write_structured_log(endpoint: str, backend: str, model: str,
 
 def log_request_response(request_logger: logging.Logger, main_logger: logging.Logger,
                         endpoint: str, request_data: dict, response_data: dict, 
-                        duration: float, status_code: int, error: str = None):
+                        duration: float, status_code: int, backend_info: dict, error: str = None):
     """
     Enhanced request/response logging with visual monitoring indicators.
     
@@ -339,15 +339,9 @@ def log_request_response(request_logger: logging.Logger, main_logger: logging.Lo
     """
     timestamp = datetime.now().strftime("%H:%M:%S")
     
-    # Get backend info for context (import dynamically to avoid circular imports)
-    try:
-        from .server import get_backend_info
-        backend_info = get_backend_info()
-        backend = backend_info.get('backend', 'unknown')
-        model = backend_info.get('model', 'unknown')
-    except ImportError:
-        backend = 'unknown'
-        model = 'unknown'
+    # Get backend info for context
+    backend = backend_info.get('backend', 'unknown')
+    model = backend_info.get('model', 'unknown')
     
     # Extract request details
     msg_count = len(request_data.get('messages', []))

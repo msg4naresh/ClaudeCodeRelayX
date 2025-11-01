@@ -73,20 +73,31 @@ As developers working with AI agents, we often wonder:
 
 This proxy gives you **full visibility and control** without complex AI frameworks.
 
+## Installation
+
+Install the package directly from the source code:
+
+```bash
+pip install .
+```
+
+For development, install in editable mode:
+
+```bash
+pip install -e .
+```
+
 ## Quick Start
 
 ```bash
-# Install
-pip install -r requirements.txt
-
 # Run with Bedrock (default)
-python main.py
+relayx
 
 # Run with Gemini
 export LLM_BACKEND=openai_compatible
 export OPENAI_API_KEY=your-gemini-key
 export OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
-python main.py
+relayx
 
 # Connect Claude Code
 export ANTHROPIC_BASE_URL=http://localhost:8082
@@ -100,6 +111,8 @@ export ANTHROPIC_BASE_URL=http://localhost:8082
 - **Local**: Ollama, LM Studio (`LLM_BACKEND=openai_compatible` + local config)
 
 ## Configuration
+
+**Important:** Do not commit the `.env` file to version control. It should be added to your `.gitignore` file.
 
 ### Environment Variables
 
@@ -138,9 +151,10 @@ pytest tests/integration/ -v
 ## File Structure
 
 ```
-├── main.py                           # Clean entry point (62 lines)
+├── setup.py                          # Packaging configuration
 ├── src/relayx/                       # Core package
 │   ├── __init__.py                   # Package info
+│   ├── main.py                       # Clean entry point (62 lines)
 │   ├── server.py                     # Complete server logic (200 lines)
 │   ├── bedrock.py                    # All Bedrock functionality (327 lines)
 │   ├── openai_compatible.py          # All OpenAI-compatible functionality (447 lines)

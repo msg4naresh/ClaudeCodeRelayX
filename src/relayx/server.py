@@ -19,13 +19,13 @@ from typing import Literal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from .models import MessagesRequest, MessagesResponse, TokenCountRequest, TokenCountResponse
-from .bedrock import call_bedrock_converse, count_request_tokens, get_model_id
-from .openai_compatible import (
+from relayx.models import MessagesRequest, MessagesResponse, TokenCountRequest, TokenCountResponse
+from relayx.bedrock import call_bedrock_converse, count_request_tokens, get_model_id
+from relayx.openai_compatible import (
     call_openai_compatible_chat, count_openai_tokens, 
     get_openai_compatible_model, get_openai_compatible_base_url
 )
-from .logging_config import setup_logging, log_request_response
+from relayx.logging_config import setup_logging, log_request_response
 
 
 # === BACKEND ROUTING ===
@@ -179,6 +179,7 @@ async def create_message(request: MessagesRequest):
         duration = time.time() - start_time
         
         # Log successful request/response
+        backend_info = get_backend_info()
         log_request_response(
             request_logger=request_logger,
             main_logger=logger,
@@ -186,7 +187,8 @@ async def create_message(request: MessagesRequest):
             request_data=request.model_dump(),
             response_data=result.model_dump(),
             duration=duration,
-            status_code=200
+            status_code=200,
+            backend_info=backend_info
         )
         
         return result
@@ -196,6 +198,7 @@ async def create_message(request: MessagesRequest):
         error_msg = str(e)
         
         # Log failed request
+        backend_info = get_backend_info()
         log_request_response(
             request_logger=request_logger, 
             main_logger=logger,
@@ -204,7 +207,8 @@ async def create_message(request: MessagesRequest):
             response_data={},
             duration=duration,
             status_code=500,
-            error=error_msg
+            error=error_msg,
+            backend_info=backend_info
         )
         
         raise
@@ -220,6 +224,7 @@ async def count_tokens(request: TokenCountRequest):
         duration = time.time() - start_time
         
         # Log successful token count
+        backend_info = get_backend_info()
         log_request_response(
             request_logger=request_logger,
             main_logger=logger,
@@ -227,7 +232,8 @@ async def count_tokens(request: TokenCountRequest):
             request_data=request.model_dump(),
             response_data={"input_tokens": result.input_tokens},
             duration=duration,
-            status_code=200
+            status_code=200,
+            backend_info=backend_info
         )
         
         return result
@@ -237,6 +243,7 @@ async def count_tokens(request: TokenCountRequest):
         error_msg = str(e)
         
         # Log failed token count
+        backend_info = get_backend_info()
         log_request_response(
             request_logger=request_logger,
             main_logger=logger,
@@ -245,7 +252,8 @@ async def count_tokens(request: TokenCountRequest):
             response_data={},
             duration=duration,
             status_code=500,
-            error=error_msg
+            error=error_msg,
+            backend_info=backend_info
         )
         
         raise

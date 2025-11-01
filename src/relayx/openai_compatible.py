@@ -28,7 +28,7 @@ from urllib3.util.retry import Retry
 from requests.exceptions import RequestException, Timeout
 from fastapi import HTTPException
 
-from .models import (
+from relayx.models import (
     MessagesRequest, MessagesResponse, Message, SystemContent, 
     ContentBlockText, ContentBlockToolUse, Usage,
     TokenCountRequest, TokenCountResponse
@@ -433,7 +433,7 @@ def call_openai_compatible_chat(request: MessagesRequest) -> MessagesResponse:
         raise HTTPException(status_code=500, detail=error_message)
     
     except Exception as e:
-        logger.error(f"Unexpected error calling OpenAI: {str(e)}")
+        logger.exception(f"Unexpected error calling OpenAI: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
 
@@ -444,5 +444,5 @@ def count_openai_tokens(request: TokenCountRequest) -> TokenCountResponse:
         return TokenCountResponse(input_tokens=token_count)
         
     except Exception as e:
-        logger.error(f"Error counting tokens for OpenAI: {str(e)}")
+        logger.exception(f"Error counting tokens for OpenAI: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error counting tokens: {str(e)}")
