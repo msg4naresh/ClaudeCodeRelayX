@@ -1,5 +1,5 @@
 """
-OpenAI-compatible backend implementation for Claude Code RelayX.
+OpenAI-compatible backend implementation for Claude Codex.
 
 This module consolidates all OpenAI-compatible functionality for providers implementing
 the OpenAI Chat Completions API standard, including:
@@ -28,7 +28,7 @@ from urllib3.util.retry import Retry
 from requests.exceptions import RequestException, Timeout
 from fastapi import HTTPException
 
-from relayx.models import (
+from claudecodex.models import (
     MessagesRequest, MessagesResponse, Message, SystemContent, 
     ContentBlockText, ContentBlockToolUse, Usage,
     TokenCountRequest, TokenCountResponse

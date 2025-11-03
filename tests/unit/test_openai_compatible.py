@@ -18,9 +18,9 @@ from unittest.mock import patch, MagicMock
 from requests.exceptions import RequestException, HTTPError
 from fastapi import HTTPException
 
-from src.relayx.models import MessagesRequest, Message, Tool
-from src.relayx.openai_compatible import (
-    call_openai_compatible_chat, count_openai_tokens, convert_to_openai_messages, 
+from claudecodex.models import MessagesRequest, Message, Tool
+from claudecodex.openai_compatible import (
+    call_openai_compatible_chat, count_openai_tokens, convert_to_openai_messages,
     convert_tools_to_openai, create_claude_response_from_openai, count_tokens_from_messages_openai
 )
 
@@ -218,8 +218,8 @@ class TestOpenAICompatibleTranslation:
 class TestOpenAICompatibleService:
     """Test OpenAI-compatible service functionality with mocked HTTP calls."""
     
-    @patch('src.relayx.openai_compatible.get_openai_compatible_client')
-    @patch('src.relayx.openai_compatible.get_openai_compatible_model')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_client')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_model')
     def test_successful_openai_call(self, mock_get_model, mock_get_client):
         """Test successful OpenAI API call."""
         # Setup mocks
@@ -261,8 +261,8 @@ class TestOpenAICompatibleService:
         assert len(result.content) == 1
         assert result.content[0].text == "Hello! I'm here to help you with your coding questions."
     
-    @patch('src.relayx.openai_compatible.get_openai_compatible_client')
-    @patch('src.relayx.openai_compatible.get_openai_compatible_model')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_client')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_model')
     def test_gemini_call(self, mock_get_model, mock_get_client):
         """Test call configured for Gemini provider."""
         # Setup mocks for Gemini
@@ -300,8 +300,8 @@ class TestOpenAICompatibleService:
         assert result.model == "gemini-2.0-flash"
         assert result.content[0].text == "I'd be happy to help you write clean Python code!"
     
-    @patch('src.relayx.openai_compatible.get_openai_compatible_client')
-    @patch('src.relayx.openai_compatible.get_openai_compatible_model')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_client')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_model')
     def test_tool_calling(self, mock_get_model, mock_get_client):
         """Test tool calling functionality."""
         # Setup mocks
@@ -351,8 +351,8 @@ class TestOpenAICompatibleService:
         assert result.content[0].name == "get_weather"
         assert result.stop_reason == "tool_use"
     
-    @patch('src.relayx.openai_compatible.get_openai_compatible_client')
-    @patch('src.relayx.openai_compatible.get_openai_compatible_model')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_client')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_model')
     def test_api_error_handling(self, mock_get_model, mock_get_client):
         """Test handling of API errors from OpenAI-compatible providers."""
         # Setup mocks
@@ -388,8 +388,8 @@ class TestOpenAICompatibleService:
         assert exc_info.value.status_code == 401
         assert "authentication failed" in exc_info.value.detail.lower()
     
-    @patch('src.relayx.openai_compatible.get_openai_compatible_client')
-    @patch('src.relayx.openai_compatible.get_openai_compatible_model')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_client')
+    @patch('claudecodex.openai_compatible.get_openai_compatible_model')
     def test_rate_limit_error(self, mock_get_model, mock_get_client):
         """Test handling of rate limit errors."""
         # Setup mocks
@@ -426,7 +426,7 @@ class TestOpenAICompatibleService:
     
     def test_token_counting_service(self):
         """Test token counting service function."""
-        from src.relayx.models import TokenCountRequest
+        from claudecodex.models import TokenCountRequest
         
         request = TokenCountRequest(
             model="gpt-4",

@@ -27,7 +27,7 @@ python main.py
 
 ## Architecture Overview
 
-This is a multi-backend LLM proxy (`relayx`) that provides Claude API compatibility for various LLM providers.
+This is a multi-backend LLM proxy (`claudecodex`) that provides Claude API compatibility for various LLM providers.
 
 ### Core Components
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Main entry point for ClaudeCodeRelayX.
+Main entry point for Claude Codex.
 
 Clean startup script that initializes and runs the FastAPI server.
 The server provides Claude API compatibility for multiple LLM backends.
@@ -22,13 +22,13 @@ import logging
 import os
 from dotenv import load_dotenv
 
-from relayx.server import app, get_backend_info
+from claudecodex.server import app, get_backend_info
 
 
 def main():
     """
-    Start the ClaudeCodeRelayX server.
-    
+    Start the Claude Codex server.
+
     Loads configuration, displays backend info, and starts the server.
     All server logic is contained in server.py for easy hacking.
     """
@@ -44,7 +44,7 @@ def main():
 
     # Display minimal startup information
     backend_info = get_backend_info()
-    print(f"ClaudeCodeRelayX starting on http://localhost:{port}")
+    print(f"Claude Codex starting on http://localhost:{port}")
     print(f"Backend: {backend_info['backend']} | Model: {backend_info['model']}")
     
     # Start the server

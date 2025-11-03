@@ -1,5 +1,5 @@
 """
-Enhanced logging configuration for the Claude Code RelayX proxy server.
+Enhanced logging configuration for the Claude Codex proxy server.
 
 This module provides comprehensive monitoring logging with:
 - Color-coded request/response flows for easy visual tracking

@@ -1,5 +1,5 @@
 """
-AWS Bedrock backend implementation for Claude Code RelayX.
+AWS Bedrock backend implementation for Claude Codex.
 
 This module consolidates all Bedrock-related functionality:
 - AWS Bedrock Runtime client initialization and configuration
@@ -18,7 +18,7 @@ from botocore.exceptions import ClientError, BotoCoreError
 from botocore.config import Config
 from fastapi import HTTPException
 
-from relayx.models import (
+from claudecodex.models import (
     MessagesRequest, MessagesResponse, Message, SystemContent, 
     ContentBlockText, ContentBlockToolUse, Usage,
     TokenCountRequest, TokenCountResponse

@@ -30,11 +30,11 @@ load_dotenv()
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import components for direct testing
-from relayx.bedrock import (
-    get_bedrock_client, call_bedrock_converse, extract_system_message, 
+from claudecodex.bedrock import (
+    get_bedrock_client, call_bedrock_converse, extract_system_message,
     convert_to_bedrock_messages, count_tokens_from_messages
 )
-from relayx.models import MessagesRequest, Message
+from claudecodex.models import MessagesRequest, Message
 
 # Test configuration
 SERVER_HOST = "localhost"

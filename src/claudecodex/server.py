@@ -1,5 +1,5 @@
 """
-Complete FastAPI server for ClaudeCodeRelayX.
+Complete FastAPI server for Claude Codex.
 
 Single hackable file containing all server functionality:
 - Backend routing and auto-detection (Bedrock vs OpenAI-compatible)
@@ -19,13 +19,13 @@ from typing import Literal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from relayx.models import MessagesRequest, MessagesResponse, TokenCountRequest, TokenCountResponse
-from relayx.bedrock import call_bedrock_converse, count_request_tokens, get_model_id
-from relayx.openai_compatible import (
-    call_openai_compatible_chat, count_openai_tokens, 
+from claudecodex.models import MessagesRequest, MessagesResponse, TokenCountRequest, TokenCountResponse
+from claudecodex.bedrock import call_bedrock_converse, count_request_tokens, get_model_id
+from claudecodex.openai_compatible import (
+    call_openai_compatible_chat, count_openai_tokens,
     get_openai_compatible_model, get_openai_compatible_base_url
 )
-from relayx.logging_config import setup_logging, log_request_response
+from claudecodex.logging_config import setup_logging, log_request_response
 
 
 # === BACKEND ROUTING ===

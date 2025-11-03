@@ -1,6 +1,6 @@
-# RelayX - Claude Code Multi-Backend Proxy
+# Claude Codex
 
-****  Intercept and route Claude Code API requests to any LLM backend.
+****  Monitor and intercept Claude Code API requests with multi-backend LLM support.
 
 A hackable Claude API proxy for monitoring AI agent requests and connecting multiple LLM backends. No complex AI frameworks - just FastAPI, requests, and clean code you can easily modify.
 
@@ -9,7 +9,7 @@ A hackable Claude API proxy for monitoring AI agent requests and connecting mult
 
 ```
 ┌─────────────┐    ANTHROPIC_BASE_URL=localhost:8082    ┌─────────────────┐
-│ Claude Code │ ──────────────────────────────────────► │     RelayX      │
+│ Claude Code │ ──────────────────────────────────────► │  Claude Codex   │
 └─────────────┘            POST /v1/messages            │   (server.py)   │
                                                         └─────────────────┘
                                                                   │
@@ -37,9 +37,9 @@ A hackable Claude API proxy for monitoring AI agent requests and connecting mult
 ```
 
 **How it works:**
-1. Claude Code sends requests to RelayX (localhost:8082)
-2. RelayX auto-detects backend (Bedrock vs OpenAI-compatible)  
-3. RelayX translates Claude API ↔ Provider API formats
+1. Claude Code sends requests to Claude Codex (localhost:8082)
+2. Claude Codex auto-detects backend (Bedrock vs OpenAI-compatible)
+3. Claude Codex translates Claude API ↔ Provider API formats
 4. Response flows back to Claude Code
 
 **Backend Support:**
@@ -87,17 +87,19 @@ For development, install in editable mode:
 pip install -e .
 ```
 
+After installation, the command will be available as `claudecodex`.
+
 ## Quick Start
 
 ```bash
 # Run with Bedrock (default)
-relayx
+claudecodex
 
 # Run with Gemini
 export LLM_BACKEND=openai_compatible
 export OPENAI_API_KEY=your-gemini-key
 export OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
-relayx
+claudecodex
 
 # Connect Claude Code
 export ANTHROPIC_BASE_URL=http://localhost:8082
@@ -151,8 +153,8 @@ pytest tests/integration/ -v
 ## File Structure
 
 ```
-├── setup.py                          # Packaging configuration
-├── src/relayx/                       # Core package
+├── pyproject.toml                    # Modern packaging configuration
+├── src/claudecodex/                  # Core package
 │   ├── __init__.py                   # Package info
 │   ├── main.py                       # Clean entry point (62 lines)
 │   ├── server.py                     # Complete server logic (200 lines)
