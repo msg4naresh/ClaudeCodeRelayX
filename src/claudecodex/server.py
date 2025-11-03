@@ -146,23 +146,20 @@ app.add_middleware(
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     """Log HTTP requests and responses."""
-    start_time = time.time()
     
     # Capture request details for POST requests
-    request_body = None
     if request.method == "POST":
         body = await request.body()
         if body:
             try:
-                request_body = json.loads(body.decode())
+                json.loads(body.decode())
             except json.JSONDecodeError:
-                request_body = {"raw": body.decode()[:200]}
+                {"raw": body.decode()[:200]}
     
     # Process request
     response = await call_next(request)
     
-    # Calculate duration
-    duration = time.time() - start_time
+    # The duration is calculated and used in the endpoint.
     
     return response
 

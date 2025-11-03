@@ -25,7 +25,7 @@ from typing import List, Dict, Any, Optional, Union
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from requests.exceptions import RequestException, Timeout
+from requests.exceptions import RequestException
 from fastapi import HTTPException
 
 from claudecodex.models import (

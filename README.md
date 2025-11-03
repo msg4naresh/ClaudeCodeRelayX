@@ -89,6 +89,41 @@ pip install -e .
 
 After installation, the command will be available as `claudecodex`.
 
+## Development Setup
+
+This project uses `uv` for package management and `ruff` for linting and formatting.
+
+1.  **Install `uv`:**
+
+    ```bash
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    ```
+
+2.  **Create a virtual environment and install dependencies:**
+
+    ```bash
+    uv venv
+    uv pip sync requirements.txt
+    ```
+
+3.  **Activate the virtual environment:**
+
+    **macOS/Linux:**
+    ```bash
+    source .venv/bin/activate
+    ```
+
+    **Windows:**
+    ```bash
+    .venv\Scripts\activate
+    ```
+
+4.  **Run the linter:**
+
+    ```bash
+    ruff check src
+    ```
+
 ## Quick Start
 
 ```bash

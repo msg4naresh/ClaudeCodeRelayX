@@ -40,7 +40,6 @@ def main():
     
     # Setup logging for main entry point
     logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
 
     # Display minimal startup information
     backend_info = get_backend_info()
