@@ -1,9 +1,48 @@
 # Claude Codex
 
-****  Monitor and intercept Claude Code API requests with multi-backend LLM support.
+Monitor and intercept Claude Code API requests with multi-backend LLM support.
 
 A hackable Claude API proxy for monitoring AI agent requests and connecting multiple LLM backends. No complex AI frameworks - just FastAPI, requests, and clean code you can easily modify.
 
+## Quick Start
+
+### 1. Install
+
+```bash
+pip install .
+```
+
+### 2. Run
+
+**With Bedrock (default):**
+```bash
+claudecodex
+```
+
+**With Gemini:**
+```bash
+export LLM_BACKEND=openai_compatible
+export OPENAI_API_KEY=your-gemini-key
+export OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+claudecodex
+```
+
+### 3. Connect Claude Code
+
+```bash
+export ANTHROPIC_BASE_URL=http://localhost:8082
+```
+
+That's it! Claude Code will now send requests through your proxy.
+
+---
+
+## What You Can Do
+
+- **Monitor requests** - See all Claude Code API calls in real-time with color-coded logs
+- **Switch backends** - Run the same workflow on Claude, GPT-4, Gemini, or local models
+- **Debug workflows** - Watch which tools get called and when
+- **Extend capabilities** - Simple translation layer makes adding new backends straightforward
 
 ## Architecture
 
@@ -73,79 +112,57 @@ As developers working with AI agents, we often wonder:
 
 This proxy gives you **full visibility and control** without complex AI frameworks.
 
-## Installation
-
-Install the package directly from the source code:
-
-```bash
-pip install .
-```
-
-For development, install in editable mode:
-
-```bash
-pip install -e .
-```
-
-After installation, the command will be available as `claudecodex`.
-
-## Development Setup
-
-This project uses `uv` for package management and `ruff` for linting and formatting.
-
-1.  **Install `uv`:**
-
-    ```bash
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    ```
-
-2.  **Create a virtual environment and install dependencies:**
-
-    ```bash
-    uv venv
-    uv pip sync requirements.txt
-    ```
-
-3.  **Activate the virtual environment:**
-
-    **macOS/Linux:**
-    ```bash
-    source .venv/bin/activate
-    ```
-
-    **Windows:**
-    ```bash
-    .venv\Scripts\activate
-    ```
-
-4.  **Run the linter:**
-
-    ```bash
-    ruff check src
-    ```
-
-## Quick Start
-
-```bash
-# Run with Bedrock (default)
-claudecodex
-
-# Run with Gemini
-export LLM_BACKEND=openai_compatible
-export OPENAI_API_KEY=your-gemini-key
-export OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
-claudecodex
-
-# Connect Claude Code
-export ANTHROPIC_BASE_URL=http://localhost:8082
-```
-
 ## Backends
 
 - **AWS Bedrock**: Claude Sonnet/Haiku/Opus (`LLM_BACKEND=bedrock`)
 - **Google Gemini**: gemini-2.0-flash (`LLM_BACKEND=openai_compatible` + Gemini config)
 - **OpenAI**: GPT-4/3.5 (`LLM_BACKEND=openai_compatible` + OpenAI config)  
 - **Local**: Ollama, LM Studio (`LLM_BACKEND=openai_compatible` + local config)
+
+---
+
+## For Developers
+
+### Development Setup
+
+This project uses `uv` for package management and `ruff` for linting and formatting.
+
+1. **Install `uv`:**
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. **Create a virtual environment and install dependencies:**
+   ```bash
+   uv venv
+   uv pip sync requirements.txt
+   ```
+
+3. **Activate the virtual environment:**
+   ```bash
+   source .venv/bin/activate  # macOS/Linux
+   .venv\Scripts\activate     # Windows
+   ```
+
+4. **Lint and format:**
+   ```bash
+   ruff check src
+   ruff format src
+   ```
+
+### Testing
+
+```bash
+pytest tests/ -v              # All tests
+pytest tests/unit/ -v         # Unit tests only (fast)
+pytest tests/integration/ -v  # Integration tests (requires API keys)
+```
+
+### Install for Development
+
+```bash
+pip install -e .  # Install in editable mode
+```
 
 ## Configuration
 
@@ -172,31 +189,18 @@ OPENAI_MODEL=model-name                # default: gemini-2.0-flash
 ANTHROPIC_BASE_URL=http://localhost:8082
 ```
 
-## Testing
-
-```bash
-# All tests
-pytest tests/ -v
-
-# Unit tests only
-pytest tests/unit/ -v
-
-# Integration tests (requires API keys)
-pytest tests/integration/ -v
-```
-
 ## File Structure
 
 ```
 ├── pyproject.toml                    # Modern packaging configuration
 ├── src/claudecodex/                  # Core package
 │   ├── __init__.py                   # Package info
-│   ├── main.py                       # Clean entry point (62 lines)
-│   ├── server.py                     # Complete server logic (200 lines)
-│   ├── bedrock.py                    # All Bedrock functionality (327 lines)
-│   ├── openai_compatible.py          # All OpenAI-compatible functionality (447 lines)
+│   ├── main.py                       # Entry point
+│   ├── server.py                     # FastAPI server & routing
+│   ├── bedrock.py                    # AWS Bedrock backend
+│   ├── openai_compatible.py          # OpenAI-compatible backend
 │   ├── models.py                     # Pydantic models
-│   └── logging_config.py             # Logging configuration
+│   └── logging_config.py             # Monitoring & logging
 ├── tests/                            # Test package
 │   ├── unit/                         # Fast tests with mocks
 │   │   ├── test_api_endpoints.py     # API endpoint tests

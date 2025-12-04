@@ -56,7 +56,7 @@ def get_bedrock_client():
 
 def get_model_id() -> str:
     """Get Bedrock model ID from environment variables with validation."""
-    model_id = os.environ.get("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-20250514-v1:0")
+    model_id = os.environ.get("BEDROCK_MODEL_ID", "us.anthropic.claude-haiku-4-5-20251001-v1:0")
 
     # Validate model ID follows AWS demo pattern
     valid_prefixes = ("anthropic.claude", "us.anthropic.claude", "cohere.command")
