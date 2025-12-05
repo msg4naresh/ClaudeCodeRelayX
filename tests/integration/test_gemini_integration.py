@@ -50,8 +50,8 @@ GEMINI_MODELS = [
 
 # Skip Gemini tests if no API key available
 skip_without_gemini = pytest.mark.skipif(
-    not os.environ.get("OPENAI_API_KEY"),
-    reason="No OPENAI_API_KEY environment variable found"
+    not os.environ.get("OPENAICOMPATIBLE_API_KEY"),
+    reason="No OPENAICOMPATIBLE_API_KEY environment variable found"
 )
 
 
@@ -86,8 +86,8 @@ class GeminiServerIntegrationTest:
         # Set environment for Gemini testing
         env = os.environ.copy()
         env['LLM_BACKEND'] = 'openai_compatible'
-        env['OPENAI_API_KEY'] = os.environ.get('OPENAI_API_KEY', 'dummy')
-        env['OPENAI_BASE_URL'] = OPENAI_BASE_URL
+        env['OPENAICOMPATIBLE_API_KEY'] = os.environ.get('OPENAICOMPATIBLE_API_KEY', 'dummy')
+        env['OPENAICOMPATIBLE_BASE_URL'] = OPENAI_BASE_URL
         env['OPENAI_MODEL'] = self.model
         env['SERVER_PORT'] = str(SERVER_PORT)
         
@@ -540,11 +540,11 @@ def test_gemini_configuration_validation():
     """Test Gemini configuration without making API calls."""
     # Test environment variable handling
     original_env = os.environ.copy()
-    
+
     try:
         os.environ['LLM_BACKEND'] = 'openai_compatible'
-        os.environ['OPENAI_API_KEY'] = 'test-gemini-key'
-        os.environ['OPENAI_BASE_URL'] = OPENAI_BASE_URL
+        os.environ['OPENAICOMPATIBLE_API_KEY'] = 'test-gemini-key'
+        os.environ['OPENAICOMPATIBLE_BASE_URL'] = OPENAI_BASE_URL
         os.environ['OPENAI_MODEL'] = 'gemini-2.0-flash'
         
         backend_info = get_backend_info()
@@ -567,11 +567,11 @@ def test_gemini_direct_service_call():
     """Test direct service call to Gemini without server."""
     # Configure environment for Gemini
     original_env = os.environ.copy()
-    
+
     try:
         os.environ['LLM_BACKEND'] = 'openai_compatible'
-        os.environ['OPENAI_API_KEY'] = os.environ.get('OPENAI_API_KEY')
-        os.environ['OPENAI_BASE_URL'] = OPENAI_BASE_URL
+        os.environ['OPENAICOMPATIBLE_API_KEY'] = os.environ.get('OPENAICOMPATIBLE_API_KEY')
+        os.environ['OPENAICOMPATIBLE_BASE_URL'] = OPENAI_BASE_URL
         os.environ['OPENAI_MODEL'] = 'gemini-2.0-flash'
         
         request = MessagesRequest(
@@ -613,19 +613,19 @@ def test_gemini_direct_service_call():
 def run_all_gemini_integration_tests():
     """
     Run complete Gemini integration test suite.
-    
+
     Executes all Gemini-specific tests with proper API key detection
     and informative output about test coverage.
     """
     print("🔮 Starting Gemini Integration Tests")
     print("=" * 50)
-    
+
     # Check API key availability
-    has_api_key = bool(os.environ.get("OPENAI_API_KEY"))
-    
+    has_api_key = bool(os.environ.get("OPENAICOMPATIBLE_API_KEY"))
+
     if not has_api_key:
-        print("⚠️  Warning: No OPENAI_API_KEY found. Gemini API tests will be skipped.")
-        print("   Set OPENAI_API_KEY environment variable for full testing.")
+        print("⚠️  Warning: No OPENAICOMPATIBLE_API_KEY found. Gemini API tests will be skipped.")
+        print("   Set OPENAICOMPATIBLE_API_KEY environment variable for full testing.")
         print("   Get your API key from: https://makersuite.google.com/app/apikey")
     
     try:

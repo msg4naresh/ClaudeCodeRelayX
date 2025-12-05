@@ -43,9 +43,9 @@ def get_backend_type() -> BackendType:
         if backend not in ["bedrock", "openai_compatible"]:
             raise ValueError(f"Unsupported LLM backend: {backend}. Must be 'bedrock' or 'openai_compatible'")
         return backend
-    
-    # Auto-detect backend based on available API keys (prioritize OpenAI-compatible/Gemini)
-    if os.environ.get("OPENAI_API_KEY"):
+
+    # Auto-detect backend based on available API keys (default to openai_compatible)
+    if os.environ.get("OPENAICOMPATIBLE_API_KEY"):
         return "openai_compatible"
     else:
         return "bedrock"
@@ -95,7 +95,7 @@ def get_backend_info() -> dict:
             "backend": "openai_compatible", 
             "model": get_openai_compatible_model(),
             "base_url": get_openai_compatible_base_url(),
-            "api_key_configured": bool(os.environ.get("OPENAI_API_KEY"))
+            "api_key_configured": bool(os.environ.get("OPENAICOMPATIBLE_API_KEY"))
         }
     else:
         return {"backend": "unknown", "error": f"Unsupported backend: {backend}"}
@@ -107,7 +107,7 @@ def validate_backend_config() -> bool:
         backend = get_backend_type()
 
         if backend == "openai_compatible":
-            api_key = os.environ.get("OPENAI_API_KEY")
+            api_key = os.environ.get("OPENAICOMPATIBLE_API_KEY")
             return bool(api_key)
 
         if backend == "bedrock":

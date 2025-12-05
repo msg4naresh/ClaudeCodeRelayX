@@ -43,14 +43,14 @@ logger = logging.getLogger(__name__)
 def get_openai_compatible_client():
     """Get configured HTTP session for OpenAI-compatible providers."""
     try:
-        api_key = os.environ.get("OPENAI_API_KEY")
+        api_key = os.environ.get("OPENAICOMPATIBLE_API_KEY")
         if not api_key:
             raise HTTPException(
                 status_code=500,
-                detail="OPENAI_API_KEY environment variable is required"
+                detail="OPENAICOMPATIBLE_API_KEY environment variable is required"
             )
-        
-        base_url = os.environ.get("OPENAI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai")
+
+        base_url = os.environ.get("OPENAICOMPATIBLE_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai")
         
         # Create session with retry strategy
         session = requests.Session()
@@ -94,7 +94,7 @@ def get_openai_compatible_model() -> str:
 
 def get_openai_compatible_base_url() -> str:
     """Get base URL from environment variables."""
-    return os.environ.get("OPENAI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai")
+    return os.environ.get("OPENAICOMPATIBLE_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai")
 
 
 # === OPENAI COMPATIBLE TRANSLATOR ===

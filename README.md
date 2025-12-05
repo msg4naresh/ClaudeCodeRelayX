@@ -14,16 +14,15 @@ pip install .
 
 ### 2. Run
 
-**With Bedrock (default):**
+**With Gemini (default):**
 ```bash
+export OPENAICOMPATIBLE_API_KEY=your-gemini-key
 claudecodex
 ```
 
-**With Gemini:**
+**With AWS Bedrock:**
 ```bash
-export LLM_BACKEND=openai_compatible
-export OPENAI_API_KEY=your-gemini-key
-export OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+export LLM_BACKEND=bedrock
 claudecodex
 ```
 
@@ -172,7 +171,7 @@ pip install -e .  # Install in editable mode
 
 ```bash
 # Backend selection
-LLM_BACKEND=bedrock|openai_compatible  # default: bedrock
+LLM_BACKEND=bedrock|openai_compatible  # default: openai_compatible
 SERVER_PORT=8082                       # default: 8082
 
 # Bedrock backend
@@ -181,8 +180,8 @@ AWS_DEFAULT_REGION=us-east-1           # default: us-east-1
 BEDROCK_MODEL_ID=model-id              # default: us.anthropic.claude-sonnet-4-*
 
 # OpenAI-compatible backend
-OPENAI_API_KEY=your-key                # required for openai_compatible
-OPENAI_BASE_URL=endpoint-url           # provider-specific
+OPENAICOMPATIBLE_API_KEY=your-key      # required for openai_compatible
+OPENAICOMPATIBLE_BASE_URL=endpoint-url # provider-specific
 OPENAI_MODEL=model-name                # default: gemini-2.0-flash
 
 # Claude Code integration
